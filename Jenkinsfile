@@ -4,8 +4,8 @@ pipeline {
     environment {
         DOCKER_COMPOSE_FILE = '/var/lib/jenkins/workspace/CICD3/docker-compose.yml'
         APP_ENV = 'prod'
-        //DOCKER_HUB_SECRET = credentials('Idcredetial')
-        //DOCKER_IMAGE_NAME = 'samircasanova117145/cicd3_app'
+        DOCKER_HUB_SECRET = credentials('Idcredetial')
+        DOCKER_IMAGE_NAME = 'samircasanova117145/cicd3_app'
     
     }
 
@@ -59,14 +59,14 @@ pipeline {
             }
         }
          
-        // stage('Push to Docker Hub') {
-         //   steps {
+         stage('Push to Docker Hub') {
+            steps {
          //           withCredentials([string(credentialsId: DOCKER_HUB_SECRET, variable: 'DOCKER_PASSWORD')]) {
           //              sh "docker login --username samircasanova117145 --password $DOCKER_PASSWORD"
           //              sh "docker tag cicd3_app samircasanova117145/cicd3_app"
           //              sh "docker push samircasanova117145/cicd3_app"
          //           }
-         //   }
-       // }
+            }
+         }
 }
 }
