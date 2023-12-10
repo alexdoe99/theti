@@ -2,7 +2,7 @@ version: '3.9'
 services:
   db:
     image: mysql:8.0
-    container_name: symfony_mysql_dev
+    container_name: symfony_mysql2
     command: "--innodb_use_native_aio=0"
     environment:
       MYSQL_DATABASE: loto1
