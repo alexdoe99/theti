@@ -4,8 +4,8 @@ pipeline {
     environment {
         DOCKER_COMPOSE_FILE = '/var/lib/jenkins/workspace/CICD3/docker-compose.yml'
         APP_ENV = 'prod'
-        DOCKER_HUB_SECRET = credentials('Idcredetial')
-        DOCKER_IMAGE_NAME = 'samircasanova117145/cicd3_app'
+        //DOCKER_HUB_SECRET = credentials('Idcredetial')
+        //DOCKER_IMAGE_NAME = 'samircasanova117145/cicd3_app'
     
     }
 
