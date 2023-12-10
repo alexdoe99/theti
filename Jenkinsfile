@@ -1,42 +1,72 @@
 pipeline {
     agent any
- stages {
-     
 
-      stage('Get Repo') {
-            steps {
-                sh 'sudo rm -r /var/jenkins_home/workspace/mysimpleproject/*'
-                git branch: 'main', url: 'https://github.com/aliamedioune/theti'           
-            }
-        }     
-<<<<<<< HEAD
+    environment {
+        DOCKER_COMPOSE_FILE = '/var/lib/jenkins/workspace/CICD3/docker-compose.yml'
+        APP_ENV = 'prod'
+        DOCKER_HUB_SECRET = credentials('Idcredetial')
+        DOCKER_IMAGE_NAME = 'samircasanova117145/cicd3_app'
     
-=======
-    stage('old build down') {
-            steps {
-               sh 'sudo chmod 777 -R /var/run/docker.sock'
-               sh 'sudo chmod 777 -R /var/jenkins_home/workspace/mysimpleproject/'
-               sh 'cd /var/jenkins_home/workspace/mysimpleproject/docker && docker compose down'
-            }
-        }
->>>>>>> ad306713e070190cef335d91b6f4add452da5c19
-   
-
-        
-    stage('Build UP') {
-            steps {
-<<<<<<< HEAD
-               sh 'docker build -t theti .' 
-=======
-               sh 'cd /var/jenkins_home/workspace/mysimpleproject/docker && docker compose up -d --build' 
->>>>>>> ad306713e070190cef335d91b6f4add452da5c19
-            }
-        }
-    stage('Test') {
-            steps {
-               sh 'cd /var/jenkins_home/workspace/mysimpleproject && phpunit --log-junit result.xml UnitTestFiles/Test/'
-            }
-        }
-
     }
+
+    stages {
+        stage('Change Ownership') {
+            steps {
+                echo 'Changing ownership of Jenkins workspace...'
+                script {
+                    sh 'sudo chown -R jenkins:jenkins /var/lib/jenkins/workspace/CICD3/'
+                }
+            }
+        }
+        
+        stage('Get Repo') {
+            steps {
+                echo 'Changing ownership of Jenkins workspace...'
+                script {
+                    sh 'sudo chown -R jenkins:jenkins /var/lib/jenkins/workspace/CICD/'
+                }
+            }
+        }
+
+        stage('Clean Docker') {
+            steps {
+                echo 'Stopping and removing containers...'
+                script {
+                    sh "docker-compose -f $DOCKER_COMPOSE_FILE -p $APP_ENV down --volumes"
+                }
+            }
+        }
+
+        stage('Build UP') {
+            steps {
+                echo 'Building and starting new containers...'
+                script {
+                    sh "docker-compose -f $DOCKER_COMPOSE_FILE up -d"
+                }
+                script {
+                    sh 'docker exec symfony_prod php bin/console cache:clear'
+                }
+            }
+        }
+
+       
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+                script {
+                    sh 'cd /var/lib/jenkins/workspace/CICD3 && phpunit --log-junit result.xml UnitTestFiles/Test/'
+                }
+            }
+        }
+         
+        // stage('Push to Docker Hub') {
+         //   steps {
+         //           withCredentials([string(credentialsId: DOCKER_HUB_SECRET, variable: 'DOCKER_PASSWORD')]) {
+          //              sh "docker login --username samircasanova117145 --password $DOCKER_PASSWORD"
+          //              sh "docker tag cicd3_app samircasanova117145/cicd3_app"
+          //              sh "docker push samircasanova117145/cicd3_app"
+         //           }
+         //   }
+       // }
+}
 }
